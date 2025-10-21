@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import z from "zod";
@@ -39,6 +40,7 @@ const signUpSchema = z.object({
 type SignUpForm = z.infer<typeof signUpSchema>;
 
 export function SignUpTab() {
+  const [isSubmitting, setSubmitting] = useState(false);
   const router = useRouter();
   const form = useForm<SignUpForm>({
     resolver: zodResolver(signUpSchema),
@@ -49,31 +51,31 @@ export function SignUpTab() {
     },
   });
 
-  const { isSubmitting } = form.formState;
-
   async function handleSignUp(data: SignUpForm) {
+    setSubmitting(true);
     authClient.signUp.email(
       {
         ...data,
         callbackURL: "/",
-        
       },
       {
         onError: (error) => {
           toast.error(
             error.error.message || "Something went wrong during sign up."
           );
+          setSubmitting(false);
         },
         onSuccess: () => {
           router.push("/");
-        }
+          setSubmitting(false);
+        },
       }
     );
   }
 
   return (
     <Form {...form}>
-      <form className="space-y-4" onSubmit={form.handleSubmit(handleSignUp)}>
+      <form className="space-y-8" onSubmit={form.handleSubmit(handleSignUp)}>
         <FormField
           name="name"
           control={form.control}
