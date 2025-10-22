@@ -4,11 +4,12 @@ import { db } from "@/drizzle/db";
 import { nextCookies } from "better-auth/next-js";
 import { sendPasswordResetEmail } from "./emails/send-password-reset";
 import { sendVerificationEmail } from "./emails/send-verification";
+import { canSendEmails, canUseGoogleOAuth, canUseGitHubOAuth } from "./utils";
 
 export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
-    requireEmailVerification: true,
+    requireEmailVerification: canSendEmails(),
     sendResetPassword: async ({ user, url }) => {
       await sendPasswordResetEmail({ user, url })
     },
@@ -24,13 +25,13 @@ export const auth = betterAuth({
     storage: "database"
   },
   socialProviders: {
-    google: {
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+        google: {
+        clientId: process.env.GOOGLE_CLIENT_ID!,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     },
-    github: {
-      clientId: process.env.GITHUB_CLIENT_ID!,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
+        github: {
+        clientId: process.env.GITHUB_CLIENT_ID!,
+        clientSecret: process.env.GITHUB_CLIENT_SECRET!,
     },
   },
   session: {
