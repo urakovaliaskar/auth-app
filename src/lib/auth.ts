@@ -4,7 +4,7 @@ import { db } from "@/drizzle/db";
 import { nextCookies } from "better-auth/next-js";
 import { sendPasswordResetEmail } from "./emails/send-password-reset";
 import { sendVerificationEmail } from "./emails/send-verification";
-import { canSendEmails, canUseGoogleOAuth, canUseGitHubOAuth } from "./utils";
+import { canSendEmails } from "./utils";
 
 export const auth = betterAuth({
   emailAndPassword: {
