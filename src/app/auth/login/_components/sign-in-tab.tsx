@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import z, { set } from "zod";
+import z from "zod";
 import { Loader } from "lucide-react";
 import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,7 +26,11 @@ const signInSchema = z.object({
 
 type SignInForm = z.infer<typeof signInSchema>;
 
-export function SignInTab() {
+export function SignInTab({
+  openEmailVerificationTab,
+}: {
+  openEmailVerificationTab: (email: string) => void;
+}) {
   const [isSubmitting, setSubmitting] = useState(false);
   const router = useRouter();
   const form = useForm<SignInForm>({
@@ -39,24 +43,26 @@ export function SignInTab() {
 
   async function handleSignIn(data: SignInForm) {
     setSubmitting(true);
-    authClient.signIn.email(
+    await authClient.signIn.email(
       {
         ...data,
         callbackURL: "/",
       },
       {
         onError: (error) => {
+          if(error.error?.code === "EMAIL_NOT_VERIFIED") {
+            openEmailVerificationTab(data.email);
+          }
           toast.error(
             error.error.message || "Something went wrong during sign in."
           );
-          setSubmitting(false);
         },
         onSuccess: () => {
           router.push("/");
-          setSubmitting(false);
         },
       }
     );
+    setSubmitting(false);
   }
 
   return (

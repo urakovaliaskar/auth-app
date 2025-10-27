@@ -39,9 +39,13 @@ const signUpSchema = z.object({
 
 type SignUpForm = z.infer<typeof signUpSchema>;
 
-export function SignUpTab() {
-  const [isSubmitting, setSubmitting] = useState(false);
+export function SignUpTab({
+  openEmailVerificationTab,
+}: {
+  openEmailVerificationTab: (email: string) => void;
+}) {
   const router = useRouter();
+  const [isSubmitting, setSubmitting] = useState(false);
   const form = useForm<SignUpForm>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -53,7 +57,7 @@ export function SignUpTab() {
 
   async function handleSignUp(data: SignUpForm) {
     setSubmitting(true);
-    authClient.signUp.email(
+    const res = await authClient.signUp.email(
       {
         ...data,
         callbackURL: "/",
@@ -63,14 +67,19 @@ export function SignUpTab() {
           toast.error(
             error.error.message || "Something went wrong during sign up."
           );
-          setSubmitting(false);
-        },
-        onSuccess: () => {
-          router.push("/");
-          setSubmitting(false);
         },
       }
     );
+
+    const emailRes = await fetch("/api/email-config");
+    const { EMAIL_ENABLED } = await emailRes.json();
+
+    if (res.error === null && !res.data.user.emailVerified && EMAIL_ENABLED) {
+      openEmailVerificationTab(data.email);
+    } else if (res.error === null && !EMAIL_ENABLED) {
+      router.push("/");
+    }
+    setSubmitting(false);
   }
 
   return (
