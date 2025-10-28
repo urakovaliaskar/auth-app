@@ -1,10 +1,12 @@
+"use client"
+
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 
 export function EmailVerification({ email }: { email: string }) {
-  const [timeToNextReset, setTimeToNextReset] = useState(30)
+  const [timeToNextReset, setTimeToNextReset] = useState(30);
   const interval = useRef<NodeJS.Timeout>(undefined);
 
   function emailVerificationCountdown(time = 30) {
@@ -19,9 +21,10 @@ export function EmailVerification({ email }: { email: string }) {
         return t - 1;
       });
     }, 1000);
-  };
+  }
 
   function resendEmail() {
+    emailVerificationCountdown();
     authClient
       .sendVerificationEmail({ email, callbackURL: "/" })
       .then(() => {
@@ -33,14 +36,13 @@ export function EmailVerification({ email }: { email: string }) {
             "Something went wrong while resending the email."
         );
       });
-  };
+  }
 
   useEffect(() => {
     emailVerificationCountdown();
+
     return () => {
-      if (interval.current) {
-        clearInterval(interval.current);
-      }
+      if (interval.current) clearInterval(interval.current);
     };
   }, []);
 
@@ -50,7 +52,12 @@ export function EmailVerification({ email }: { email: string }) {
         A verification email has been sent to <strong>{email}</strong>. Please
         check your inbox and click on the verification link to continue.
       </p>
-      <Button variant="outline" className="w-full" onClick={resendEmail} disabled={timeToNextReset > 0}>
+      <Button
+        variant="outline"
+        className="w-full"
+        onClick={resendEmail}
+        disabled={timeToNextReset > 0}
+      >
         Resend Email {timeToNextReset > 0 ? `(${timeToNextReset}s)` : ""}
       </Button>
     </div>

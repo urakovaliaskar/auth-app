@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
+import { useEmailConfig } from "@/hooks/useEmailConfig";
 
 const signUpSchema = z.object({
   name: z.string().min(1),
@@ -45,6 +46,7 @@ export function SignUpTab({
   openEmailVerificationTab: (email: string) => void;
 }) {
   const router = useRouter();
+  const isEmailConfigured = useEmailConfig();
   const [isSubmitting, setSubmitting] = useState(false);
   const form = useForm<SignUpForm>({
     resolver: zodResolver(signUpSchema),
@@ -71,12 +73,13 @@ export function SignUpTab({
       }
     );
 
-    const emailRes = await fetch("/api/email-config");
-    const { EMAIL_ENABLED } = await emailRes.json();
-
-    if (res.error === null && !res.data.user.emailVerified && EMAIL_ENABLED) {
+    if (
+      res.error === null &&
+      !res.data.user.emailVerified &&
+      isEmailConfigured
+    ) {
       openEmailVerificationTab(data.email);
-    } else if (res.error === null && !EMAIL_ENABLED) {
+    } else if (res.error === null && !isEmailConfigured) {
       router.push("/");
     }
     setSubmitting(false);
