@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 
 const forgotPasswordSchema = z.object({
-  email: z.email().min(1)
+  email: z.email().min(1),
 });
 
 type ForgotPasswordForm = z.infer<typeof forgotPasswordSchema>;

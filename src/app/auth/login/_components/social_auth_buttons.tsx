@@ -13,7 +13,10 @@ export function SocialAuthButtons() {
   const handleSignIn = async (provider: string) => {
     setIsLoading(provider);
 
-    const { error } = await authClient.signIn.social({ provider, callbackURL: "/" });
+    const { error } = await authClient.signIn.social({
+      provider,
+      callbackURL: "/",
+    });
 
     if (error) {
       toast.error(`Error signing in with ${provider}: ${error.message}`);
@@ -21,28 +24,28 @@ export function SocialAuthButtons() {
 
     setIsLoading(null);
   };
-  
+
   return (
     <>
       {OAUTH_PROVIDERS.map((provider) => {
         const Icon = OAUTH_PROVIDER_DETAILS[provider].Icon;
 
         return (
-            <Button
+          <Button
             variant="outline"
             key={provider}
             className=""
             onClick={() => handleSignIn(provider)}
             disabled={isLoading === provider}
-            >
+          >
             {isLoading === provider && <Loader className="spinner" />}
             {isLoading !== provider && (
               <>
-              <Icon />
-              {OAUTH_PROVIDER_DETAILS[provider].name}
+                <Icon />
+                {OAUTH_PROVIDER_DETAILS[provider].name}
               </>
             )}
-            </Button>
+          </Button>
         );
       })}
     </>
