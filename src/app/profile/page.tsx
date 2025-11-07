@@ -9,8 +9,6 @@ import { auth } from "@/lib/auth";
 export default async function ProfilePage() {
   const session = await auth.api.getSession({ headers: await headers() });
 
-  console.log(session?.user)
-
   if (session === null) return redirect("auth/login");
 
   return (
