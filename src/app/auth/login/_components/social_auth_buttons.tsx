@@ -1,16 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { Loader } from "lucide-react";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { OAUTH_PROVIDERS, OAUTH_PROVIDER_DETAILS } from "@/lib/oauth-providers";
-import { ActionButton } from "@/components/ui/action-button";
 import { AuthActionButton } from "@/components/auth/auth-action-button";
 
 export function SocialAuthButtons() {
-
   return (
     <>
       {OAUTH_PROVIDERS.map((provider) => {
@@ -20,7 +14,8 @@ export function SocialAuthButtons() {
           <AuthActionButton
             variant="outline"
             key={provider}
-            action={() => authClient.signIn.social({
+            action={() =>
+              authClient.signIn.social({
                 provider,
                 callbackURL: "/",
               })

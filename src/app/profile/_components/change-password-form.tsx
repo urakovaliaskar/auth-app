@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
@@ -13,13 +14,10 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
-import { SubmitButton } from "@/components/ui/submit-button";
-import { revokeOtherSessions } from "better-auth/api";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Checkbox } from "@/components/ui/checkbox";
-import { auth } from "@/lib/auth";
+import { SubmitButton } from "@/components/ui/submit-button";
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1),

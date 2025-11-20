@@ -4,10 +4,6 @@ import { AuthActionButton } from "@/components/auth/auth-action-button";
 import { authClient } from "@/lib/auth-client";
 
 export function SetPasswordButton({ email }: { email: string }) {
-  function handleSetPassword() {
-    // Logic to send password reset email
-    console.log(`Sending password reset email to ${email}`);
-  }
   return (
     <AuthActionButton
       variant="outline"

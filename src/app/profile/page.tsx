@@ -13,10 +13,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { user, account } from "../../drizzle/schemas/auth-schema";
 import { ProfileUpdateForm } from "./_components/profile-update-form";
 import { Suspense } from "react";
-import * as SeparatorPrimitive from "@radix-ui/react-separator";
 import { SetPasswordButton } from "./_components/set-password-button";
 import { ChangePasswordForm } from "./_components/change-password-form";
 
