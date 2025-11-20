@@ -24,13 +24,18 @@ export default function Home() {
         ) : (
           <>
             <h1 className="text-3xl nt-bold">Welcome {session.user.name}</h1>
-            <Button
-              size={"lg"}
-              variant={"destructive"}
-              onClick={() => authClient.signOut()}
-            >
-              Sign Out
-            </Button>
+            <div className="flex justify-center gap-4">
+              <Button asChild size={"lg"}>
+                <Link href="/profile">Profile</Link>
+              </Button>
+              <Button
+                size={"lg"}
+                variant={"destructive"}
+                onClick={() => authClient.signOut()}
+              >
+                Sign Out
+              </Button>
+            </div>
           </>
         )}
       </div>

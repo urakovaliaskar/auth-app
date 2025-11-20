@@ -1,9 +1,8 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import z from "zod";
-import { Loader } from "lucide-react";
 import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -19,6 +18,7 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { useEmailConfig } from "@/hooks/useEmailConfig";
+import { SubmitButton } from "@/components/ui/submit-button";
 
 const signInSchema = z.object({
   email: z.email().min(1),
@@ -110,10 +110,7 @@ export function SignInTab({
             </FormItem>
           )}
         />
-        <Button type="submit" disabled={isSubmitting} className="w-full">
-          {isSubmitting && <Loader className="spinner" />}
-          {!isSubmitting && "Sign In"}
-        </Button>
+        <SubmitButton isSubmitting={isSubmitting}>Sign In</SubmitButton>
       </form>
     </Form>
   );

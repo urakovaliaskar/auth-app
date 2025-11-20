@@ -14,16 +14,16 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { PasswordInput } from "@/components/ui/password-input";
-import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
-import { useEmailConfig } from "@/hooks/useEmailConfig";
 import { SubmitButton } from "@/components/ui/submit-button";
+import { revokeOtherSessions } from "better-auth/api";
+import { PasswordInput } from "@/components/ui/password-input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { auth } from "@/lib/auth";
 
-const signUpSchema = z.object({
-  name: z.string().min(1),
-  email: z.email().min(1),
-  password: z
+const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1),
+  newPassword: z
     .string()
     .min(8)
     .regex(/[A-Z]/, {
@@ -36,90 +36,51 @@ const signUpSchema = z.object({
     .regex(/[^A-Za-z0-9]/, {
       message: "Password must contain at least one special character.",
     }),
+  revokeOtherSessions: z.boolean(),
 });
 
-type SignUpForm = z.infer<typeof signUpSchema>;
+type ChangePasswordForm = z.infer<typeof changePasswordSchema>;
 
-export function SignUpTab({
-  openEmailVerificationTab,
-}: {
-  openEmailVerificationTab: (email: string) => void;
-}) {
+export function ChangePasswordForm() {
   const router = useRouter();
-  const isEmailConfigured = useEmailConfig();
   const [isSubmitting, setSubmitting] = useState(false);
-  const form = useForm<SignUpForm>({
-    resolver: zodResolver(signUpSchema),
+  const form = useForm<ChangePasswordForm>({
+    resolver: zodResolver(changePasswordSchema),
     defaultValues: {
-      name: "",
-      email: "",
-      password: "",
+      currentPassword: "",
+      newPassword: "",
+      revokeOtherSessions: true,
     },
   });
 
-  async function handleSignUp(data: SignUpForm) {
+  async function handlePasswordChange(data: ChangePasswordForm) {
     setSubmitting(true);
-    const res = await authClient.signUp.email(
-      {
-        ...data,
-        callbackURL: "/",
-      },
-      {
-        onError: (error) => {
-          toast.error(
-            error.error.message || "Something went wrong during sign up."
-          );
-        },
-      }
-    );
 
-    if (
-      res.error === null &&
-      !res.data.user.emailVerified &&
-      isEmailConfigured
-    ) {
-      openEmailVerificationTab(data.email);
-    } else if (res.error === null && !isEmailConfigured) {
-      router.push("/");
-    }
+    await authClient.changePassword(data, {
+      onError: (error) => {
+        toast.error(error.error.message || "Failed to change password.");
+      },
+      onSuccess: () => {
+        toast.success("Password changed successfully.");
+        form.reset();
+      },
+    });
+
     setSubmitting(false);
   }
 
   return (
     <Form {...form}>
-      <form className="space-y-8" onSubmit={form.handleSubmit(handleSignUp)}>
+      <form
+        className="space-y-8"
+        onSubmit={form.handleSubmit(handlePasswordChange)}
+      >
         <FormField
-          name="name"
+          name="currentPassword"
           control={form.control}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Name</FormLabel>
-              <FormControl>
-                <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          name="email"
-          control={form.control}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input type="email" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          name="password"
-          control={form.control}
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>Current Password</FormLabel>
               <FormControl>
                 <PasswordInput {...field} />
               </FormControl>
@@ -127,7 +88,38 @@ export function SignUpTab({
             </FormItem>
           )}
         />
-        <SubmitButton isSubmitting={isSubmitting}>Sign Up</SubmitButton>
+        <FormField
+          name="newPassword"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>New Password</FormLabel>
+              <FormControl>
+                <PasswordInput {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          name="revokeOtherSessions"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem className="flex">
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <FormLabel>Log out other sessions</FormLabel>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <SubmitButton isSubmitting={isSubmitting}>
+          Change Password{" "}
+        </SubmitButton>
       </form>
     </Form>
   );

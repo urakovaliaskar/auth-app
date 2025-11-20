@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
+import { AuthActionButton } from "@/components/auth/auth-action-button";
 
 export function EmailVerification({ email }: { email: string }) {
   const [timeToNextReset, setTimeToNextReset] = useState(30);
@@ -25,17 +25,7 @@ export function EmailVerification({ email }: { email: string }) {
 
   function resendEmail() {
     emailVerificationCountdown();
-    authClient
-      .sendVerificationEmail({ email, callbackURL: "/" })
-      .then(() => {
-        toast.success("Verification email sent.");
-      })
-      .catch((error) => {
-        toast.error(
-          error.error?.message ||
-            "Something went wrong while resending the email."
-        );
-      });
+    return authClient.sendVerificationEmail({ email, callbackURL: "/" });
   }
 
   useEffect(() => {
@@ -52,14 +42,14 @@ export function EmailVerification({ email }: { email: string }) {
         A verification email has been sent to <strong>{email}</strong>. Please
         check your inbox and click on the verification link to continue.
       </p>
-      <Button
+      <AuthActionButton
         variant="outline"
         className="w-full"
-        onClick={resendEmail}
+        action={resendEmail}
         disabled={timeToNextReset > 0}
       >
         Resend Email {timeToNextReset > 0 ? `(${timeToNextReset}s)` : ""}
-      </Button>
+      </AuthActionButton>
     </div>
   );
 }

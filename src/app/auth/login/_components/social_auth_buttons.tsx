@@ -6,24 +6,10 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { OAUTH_PROVIDERS, OAUTH_PROVIDER_DETAILS } from "@/lib/oauth-providers";
+import { ActionButton } from "@/components/ui/action-button";
+import { AuthActionButton } from "@/components/auth/auth-action-button";
 
 export function SocialAuthButtons() {
-  const [isLoading, setIsLoading] = useState<string | null>(null);
-
-  const handleSignIn = async (provider: string) => {
-    setIsLoading(provider);
-
-    const { error } = await authClient.signIn.social({
-      provider,
-      callbackURL: "/",
-    });
-
-    if (error) {
-      toast.error(`Error signing in with ${provider}: ${error.message}`);
-    }
-
-    setIsLoading(null);
-  };
 
   return (
     <>
@@ -31,21 +17,18 @@ export function SocialAuthButtons() {
         const Icon = OAUTH_PROVIDER_DETAILS[provider].Icon;
 
         return (
-          <Button
+          <AuthActionButton
             variant="outline"
             key={provider}
-            className=""
-            onClick={() => handleSignIn(provider)}
-            disabled={isLoading === provider}
+            action={() => authClient.signIn.social({
+                provider,
+                callbackURL: "/",
+              })
+            }
           >
-            {isLoading === provider && <Loader className="spinner" />}
-            {isLoading !== provider && (
-              <>
-                <Icon />
-                {OAUTH_PROVIDER_DETAILS[provider].name}
-              </>
-            )}
-          </Button>
+            <Icon />
+            {OAUTH_PROVIDER_DETAILS[provider].name}
+          </AuthActionButton>
         );
       })}
     </>

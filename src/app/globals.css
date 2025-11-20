@@ -118,7 +118,3 @@
     @apply bg-background text-foreground;
   }
 }
-
-.spinner {
-  animation: spin 1s linear infinite;
-}

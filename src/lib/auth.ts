@@ -9,6 +9,17 @@ import { canSendEmails } from "./utils";
 import { sendWelcomeEmail } from "./emails/send-welcome-email";
 
 export const auth = betterAuth({
+  user: {
+    changeEmail: {
+      enabled: true,
+      sendChangeEmailVerification: async ({ user, url, newEmail }) => {
+        await sendVerificationEmail({ 
+          user: { ...user, email: newEmail },
+          url 
+        });
+      },
+    }
+  },
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: canSendEmails(),

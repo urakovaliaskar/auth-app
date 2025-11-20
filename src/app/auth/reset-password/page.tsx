@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
-import { Loader } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -16,8 +15,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { SubmitButton } from "@/components/ui/submit-button";
 import { authClient } from "@/lib/auth-client";
 import { PasswordInput } from "@/components/ui/password-input";
 import {
@@ -131,10 +130,9 @@ export default function ResetPassword() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" disabled={isSubmitting} className="flex-1">
-                {isSubmitting && <Loader className="spinner" />}
-                {!isSubmitting && "Reset Password"}
-              </Button>
+              <SubmitButton isSubmitting={isSubmitting}>
+                Reset Password
+              </SubmitButton>
             </form>
           </Form>
         </CardContent>

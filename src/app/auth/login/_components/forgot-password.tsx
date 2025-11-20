@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import z from "zod";
-import { Loader } from "lucide-react";
+import { Loader2Icon } from "lucide-react";
 import { toast } from "sonner";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -17,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
+import { SubmitButton } from "@/components/ui/submit-button";
 
 const forgotPasswordSchema = z.object({
   email: z.email().min(1),
@@ -78,10 +79,7 @@ export function ForgotPassword({ openSignIn }: { openSignIn: () => void }) {
           <Button variant="outline" onClick={openSignIn}>
             Back
           </Button>
-          <Button type="submit" disabled={isSubmitting} className="flex-1">
-            {isSubmitting && <Loader className="spinner" />}
-            {!isSubmitting && "Send Reset Email"}
-          </Button>
+          <SubmitButton isSubmitting={isSubmitting}>Send Reset Email</SubmitButton>
         </div>
       </form>
     </Form>
